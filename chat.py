@@ -1,6 +1,6 @@
 import openai
 
-openai.api_key = "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"
+openai.api_key = ""
 
 
 context = [ {'role':'system', 'content':"""
