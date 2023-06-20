@@ -2,12 +2,22 @@
 <html>
 <head>
     <title>Voice Input</title>
+    <style>
+        .user-message {
+            color: blue;
+        }
+
+        .model-message {
+            color: green;
+        }
+    </style>
 </head>
 <body>
     <h1>Voice Input</h1>
     <button id="startButton">Start Recording</button>
     <button id="stopButton">Stop Recording</button>
     <div id="result"></div>
+    <div id="messageContainer"></div>  <!-- Added for displaying chat messages -->
 
     <script>
         const recognition = new webkitSpeechRecognition();
@@ -37,13 +47,23 @@
                 },
                 body: JSON.stringify({ input: voiceInput })
             })
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(result => {
                     console.log('Server response:', result);
+                    appendMessage('user', voiceInput);
+                    appendMessage('model', result.message);
                 })
                 .catch(error => {
                     console.error('Error processing voice input:', error);
                 });
+        }
+
+        function appendMessage(sender, message) {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(sender === 'user' ? 'user-message' : 'model-message');
+            messageElement.textContent = sender === 'user' ? `User: ${message}` : `Model: ${message}`;
+            messageContainer.appendChild(messageElement);
         }
     </script>
 </body>
