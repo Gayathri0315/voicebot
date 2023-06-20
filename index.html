@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Input</title>
+</head>
+<body>
+    <h1>Voice Input</h1>
+    <button id="startButton">Start Recording</button>
+    <button id="stopButton">Stop Recording</button>
+    <div id="result"></div>
+
+    <script>
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+
+        let resultDiv = document.getElementById('result');
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            recognition.start();
+        });
+
+        document.getElementById('stopButton').addEventListener('click', () => {
+            recognition.stop();
+        });
+
+        recognition.onresult = (event) => {
+            const result = event.results[event.results.length - 1][0].transcript;
+            resultDiv.textContent = result;
+            sendVoiceData(result);
+        };
+
+        function sendVoiceData(voiceInput) {
+            fetch('/process_voice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ input: voiceInput })
+            })
+                .then(response => response.text())
+                .then(result => {
+                    console.log('Server response:', result);
+                })
+                .catch(error => {
+                    console.error('Error processing voice input:', error);
+                });
+        }
+    </script>
+</body>
+</html>
